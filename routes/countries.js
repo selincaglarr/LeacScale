@@ -3,7 +3,6 @@ const AccessToken = "bib99ay5ulymg6jgu1ur095y6cf26tn4";
 const turkish = require("../lang/tr.json");
 const english = require("../lang/en.json");
 const express = require("express");
-const { request } = require("express");
 const router = express.Router();
 
 // router.get("/", (req, res) => {
@@ -33,7 +32,7 @@ const router = express.Router();
 // });
 
 router.get("/", (req, res) => {
-  const acceptlanguage = req.headers["accept-language"];
+  const acceptlanguage = req.get("accept-language");
 
   // console.log(req.headers);
   axios
@@ -49,18 +48,16 @@ router.get("/", (req, res) => {
       // console.log(response.data);
       if (acceptlanguage == "tr") {
         let c = response.data.map((data, index) => {
-          let b = turkish.map((item) => {
-            // console.log(Object.keys(item)[0]);
-            // console.log(data.full_name_locale);
-            if (data.full_name_locale === Object.keys(item)[0]) {
-              return { ...data, full_name_locale: Object.values(item)[0] };
-            }
-            return data;
-          });
-          console.log("b:", b);
-          return b;
+          data.full_name_locale =
+            turkish[data.full_name_locale] || data.full_name_locale;
+          return data;
         });
         // console.log(c);
+        res.send(c);
+      } else if (acceptlanguage == "en") {
+        res.send(response.data);
+      } else {
+        res.json({ message: "unsupported language" });
       }
     })
     .catch((error) => {

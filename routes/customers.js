@@ -1,78 +1,93 @@
-// const axios = require("axios");
-// const AccessToken = "bib99ay5ulymg6jgu1ur095y6cf26tn4";
-// // const bodyParser = require("body-parser");
-// const { validationResult, bo, bodydy } = require("express-validator");
-// const express = require("express");
-// const router = express.Router();
+const axios = require("axios");
+const AccessToken = "bib99ay5ulymg6jgu1ur095y6cf26tn4";
+const bodyParser = require("body-parser");
+const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
+const express = require("express");
+const router = express.Router();
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: false }));
 
-// // // const urlencodedParser = bodyParser.urlencoded({ extended: false });
-// // const myValidationResult = validationResult.withDefaults({
-// //   formatter: (error) => {
-// //     return {
-// //       myLocation: error.location,
-// //     };
-// //   },
-// // });
+router.post("/", (req, res, next) => {
+  axios.post("https://m2.leanscale.com/index.php/rest/default/V1/customers", {
+    //   axios.get(
+    //     "https://m2.leanscale.com/index.php/rest/<store_code>/V1/customers",
+    // {
+    headers: {
+      "Content-Type": "application/json",
+      //   Authorization: `Bearer ${AccessToken} `,
+    }
+      .then((response) => {
+        const { body } = req;
+        const schema = Joi.object().keys({
+          firstname: Joi.string().min(5).max(50).required(),
+          lastname: Joi.string().min(5).max(50).required(),
+          email: Joi.string().email({
+            minDomainSegments: 2,
+            tlds: { allow: ["com", "net"] },
+          }),
+          password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+        });
+        const result = Joi.validate(body, schema);
+        const { value, error } = result;
+        const valid = error == null;
+        if (!valid) {
+          res.status(422).json({
+            message: "Invalid request",
+            data: body,
+          });
+        } else {
+          const createdPost = await api.createPost(data);
+          res.json({ message: "Resource created", data: createdPost });
+        }
+      })
+      .catch((error) => {
+        res.send(error);
+      }),
+  });
+});
 
-// router.post(
-//   "/",
+router.post("/", (req, res) => {
+  const acceptlanguage = req.get("accept-language");
 
-//   [
-//     await body("firstname").exists().bail().run(req),
-//     await body("lastname").exists().bail().run(req),
-//     await body("email", "Your email is not valid")
-//       .isEmail()
-//       .normalizeEmail()
-//       .bail()
-//       .run(req),
-//     await body("password", "Password must have more than 5 characters")
-//       .exists()
-//       .isLength({ min: 5 })
-//       // .not().isIn([^(?=.*\d)(?=.*[a-zA-Z]).{4,8}$])
-//       .bail()
-//       .run(req),
-//   ],
-//   async (req, res, next) => {
-//     axios.post("https://m2.leanscale.com/index.php/rest/default/V1/customers", {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${AccessToken} `,
-//       },
-//     });
-//     const result = validationResult(req);
-//     if (!result.isEmpty()) {
-//       return res.status(400).json({ errors: result.array() });
-//     }
-//     console.log(req.body);
+  axios.post("https://m2.leanscale.com/index.php/rest/default/V1/customers", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${AccessToken} `,
+    }.then((response, request) => {
+      const data = response.body;
+      console.log(data);
 
-//     // const requiredData = matchedData(req, { includeOptionals: false });
-//     // const allData = matchedData(req, { includeOptionals: true });
-//     // console.log(requiredData); // { name: 'John Doe' }
-//     // console.log(allData); // { name: 'John Doe', bio: '' }
-//     // .then((req) => {
-//     //   req.bodyParser = new User();
-//     //   User.create({
-//     //     firstname: req.body.firstname,
-//     //     lastname: req.body.lastname,
-//     //     email: req.body.email,
-//     //     password: req.body.password,
-//     //   }).then((user) => res.jsonp(user));
-//     // })
-//     // .catch((errors) => {
-//     //   return res.status(400).jsonp(errors);
-//     // });
-//     //```````
-//     // const errors = myValidationResult(req).mapped();
-//     // if (!errors.isEmpty) {
-//     //   return res.status(400).json({ errors: errors.mapped });
-//     // }
-//     // User.create({
-//     //   firstname: req.body.firstname,
-//     //   lastname: req.body.lastname,
-//     //   email: req.body.email,
-//     //   password: req.body.password,
-//     // }).then((user) => res.jsonp(user));
-//   }
-// );
-
-// module.exports = router;
+      const schema = Joi.object({
+        firstname: Joi.string().min(5).max(50).required(),
+        lastname: Joi.string().min(5).max(50).required(),
+        email: Joi.string().email({
+          minDomainSegments: 2,
+          tlds: { allow: ["com", "net"] },
+        }),
+        password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+      });
+      Joi.validate(data, schema, (err, value) => {
+        // const id = Math.ceil(Math.random() * 9999999);
+        console.log(value);
+        if (err) {
+          res.status(422).json({
+            status: "error",
+            message: "Invalid request data",
+            data: data,
+          });
+        } else {
+          res.json({
+            status: "success",
+            message: "User created successfully",
+            data: data,
+          });
+        }
+      }).catch((error) => {
+        console.log(error);
+        res.send(error);
+      });
+    }),
+  });
+});
+module.exports = router;

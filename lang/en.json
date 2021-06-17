@@ -1,14 +1,5 @@
-[
-  {
-    "id": "AE",
-    "full_name_english": "United Arab Emirates"
-  },
-  {
-    "id": "US",
-    "full_name_english": "United States of America"
-  },
-  {
-    "id": "TR",
-    "full_name_english": "Turkey"
-  }
-]
+{
+  "United Arab Emirates": "United Arab Emirates",
+  "United States of America": "United States of America",
+  "Turkey": "Turkey"
+}

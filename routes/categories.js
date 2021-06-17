@@ -4,6 +4,8 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", (req, res) => {
+  const acceptlanguage = req.get("accept-language");
+  console.log(req.headers);
   axios
     .get("https://m2.leanscale.com/index.php/rest/default/V1/categories", {
       headers: {
@@ -11,8 +13,12 @@ router.get("/", (req, res) => {
       },
     })
     .then((response) => {
-      console.log(response.data);
-      res.send(response.data);
+      if (acceptlanguage == "en") {
+        // console.log(response.data);
+        res.send(response.data);
+      } else {
+        res.json({ message: "unsupported language" });
+      }
     })
     .catch((error) => {
       // handle error

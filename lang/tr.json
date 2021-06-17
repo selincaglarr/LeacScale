@@ -1,11 +1,5 @@
-[
-  {
-    "United Arab Emirates": "Birlesik Arap Emirlikleri"
-  },
-  {
-    "United States of America": "Amerika Birlesik Devletleri"
-  },
-  {
-    "Turkey": "Turkiye"
-  }
-]
+{
+  "United Arab Emirates": "Birlesik Arap Emirlikleri",
+  "United States of America": "Amerika Birlesik Devletleri",
+  "Turkey": "Turkiye"
+}
